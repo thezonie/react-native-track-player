@@ -96,7 +96,7 @@ class AVPlayerObserver: NSObject {
     private func handleStatusChange(_ change: [NSKeyValueChangeKey: Any]?) {
         let status: AVPlayer.Status
         if let statusNumber = change?[.newKey] as? NSNumber {
-            status = AVPlayer.Status(rawValue: statusNumber.intValue)!
+            status = AVPlayer.Status(rawValue: statusNumber.intValue) ?? .unknown
         }
         else {
             status = .unknown
@@ -105,9 +105,7 @@ class AVPlayerObserver: NSObject {
     }
     
     private func handleTimeControlStatusChange(_ change: [NSKeyValueChangeKey: Any]?) {
-        let status: AVPlayer.TimeControlStatus
-        if let statusNumber = change?[.newKey] as? NSNumber {
-            status = AVPlayer.TimeControlStatus(rawValue: statusNumber.intValue)!
+        if let statusNumber = change?[.newKey] as? NSNumber, let status = AVPlayer.TimeControlStatus(rawValue: statusNumber.intValue) {
             delegate?.player(didChangeTimeControlStatus: status)
         }
     }
