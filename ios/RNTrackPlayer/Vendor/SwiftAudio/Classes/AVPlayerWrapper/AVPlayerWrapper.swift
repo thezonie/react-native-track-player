@@ -133,6 +133,13 @@ class AVPlayerWrapper: AVPlayerWrapperProtocol {
     }
     
     func play() {
+        // if the player has already been started and paused, and the current item's loaded time ranges is empty, the player item needs to be reset
+        let currentTime = avPlayer.currentTime()
+        if currentTime != .zero, let currentItem = avPlayer.currentItem, currentItem.loadedTimeRanges.isEmpty {
+            avPlayer.replaceCurrentItem(with: AVPlayerItem(asset: currentItem.asset))
+            avPlayer.seek(to: currentTime)
+        }
+    
         avPlayer.play()
     }
     
