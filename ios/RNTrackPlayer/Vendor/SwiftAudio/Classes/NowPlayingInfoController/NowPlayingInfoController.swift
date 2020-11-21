@@ -39,9 +39,9 @@ public class NowPlayingInfoController: NowPlayingInfoControllerProtocol {
     
     public func set(keyValue: NowPlayingInfoKeyValue) {
         DispatchQueue.main.async { [weak self] in
-                   self!._info[keyValue.getKey()] = keyValue.getValue()
-                   self!._infoCenter.nowPlayingInfo = self!._info
-               }
+            self?._info[keyValue.getKey()] = keyValue.getValue()
+            self?._infoCenter.nowPlayingInfo = self?._info
+        }
     }
     
     public func clear() {
