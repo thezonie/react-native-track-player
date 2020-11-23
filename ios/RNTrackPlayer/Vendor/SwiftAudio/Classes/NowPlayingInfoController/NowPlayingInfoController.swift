@@ -31,10 +31,12 @@ public class NowPlayingInfoController: NowPlayingInfoControllerProtocol {
     }
     
     public func set(keyValues: [NowPlayingInfoKeyValue]) {
-        keyValues.forEach { (keyValue) in
-            _info[keyValue.getKey()] = keyValue.getValue()
+        DispatchQueue.main.async { [weak self] in
+            keyValues.forEach { (keyValue) in
+                self?._info[keyValue.getKey()] = keyValue.getValue()
+            }
+            self?._infoCenter.nowPlayingInfo = self?._info
         }
-        self._infoCenter.nowPlayingInfo = _info
     }
     
     public func set(keyValue: NowPlayingInfoKeyValue) {
@@ -45,8 +47,10 @@ public class NowPlayingInfoController: NowPlayingInfoControllerProtocol {
     }
     
     public func clear() {
-        self._info = [:]
-        self._infoCenter.nowPlayingInfo = _info
+        DispatchQueue.main.async { [weak self] in
+            self?._info = [:]
+            self?._infoCenter.nowPlayingInfo = self?._info
+        }
     }
     
 }
