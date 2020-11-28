@@ -136,8 +136,16 @@ class AVPlayerWrapper: AVPlayerWrapperProtocol {
         // if the player has already been started and paused, and the current item's loaded time ranges is empty, the player item needs to be reset
         let currentTime = avPlayer.currentTime()
         if currentTime != .zero, let currentItem = avPlayer.currentItem, currentItem.loadedTimeRanges.isEmpty {
-            avPlayer.replaceCurrentItem(with: AVPlayerItem(asset: currentItem.asset))
+            let resetItem = AVPlayerItem(asset: currentItem.asset, automaticallyLoadedAssetKeys: [Constants.assetPlayableKey])
+            resetItem.preferredForwardBufferDuration = bufferDuration
+            avPlayer.replaceCurrentItem(with: resetItem)
             avPlayer.seek(to: currentTime)
+            
+            // Register for events
+            playerTimeObserver.registerForBoundaryTimeEvents()
+            playerObserver.startObserving()
+            playerItemNotificationObserver.startObserving(item: resetItem)
+            playerItemObserver.startObserving(item: resetItem)
         }
     
         avPlayer.play()
