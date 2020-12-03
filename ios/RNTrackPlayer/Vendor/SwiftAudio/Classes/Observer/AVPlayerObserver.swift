@@ -55,22 +55,26 @@ class AVPlayerObserver: NSObject {
      Start receiving events from this observer.
      */
     func startObserving() {
-        guard let player = player else {
-            return
+        DispatchQueue.main.async {
+            guard let player = self.player else {
+                return
+            }
+            self.stopObserving()
+            self.isObserving = true
+            player.addObserver(self, forKeyPath: AVPlayerKeyPath.status, options: self.statusChangeOptions, context: &AVPlayerObserver.context)
+            player.addObserver(self, forKeyPath: AVPlayerKeyPath.timeControlStatus, options: self.timeControlStatusChangeOptions, context: &AVPlayerObserver.context)
         }
-        self.stopObserving()
-        self.isObserving = true
-        player.addObserver(self, forKeyPath: AVPlayerKeyPath.status, options: self.statusChangeOptions, context: &AVPlayerObserver.context)
-        player.addObserver(self, forKeyPath: AVPlayerKeyPath.timeControlStatus, options: self.timeControlStatusChangeOptions, context: &AVPlayerObserver.context)
     }
     
     func stopObserving() {
-        guard let player = player, isObserving else {
-            return
+        DispatchQueue.main.async {
+            guard let player = self.player, self.isObserving else {
+                return
+            }
+            player.removeObserver(self, forKeyPath: AVPlayerKeyPath.status, context: &AVPlayerObserver.context)
+            player.removeObserver(self, forKeyPath: AVPlayerKeyPath.timeControlStatus, context: &AVPlayerObserver.context)
+            self.isObserving = false
         }
-        player.removeObserver(self, forKeyPath: AVPlayerKeyPath.status, context: &AVPlayerObserver.context)
-        player.removeObserver(self, forKeyPath: AVPlayerKeyPath.timeControlStatus, context: &AVPlayerObserver.context)
-        self.isObserving = false
     }
     
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {

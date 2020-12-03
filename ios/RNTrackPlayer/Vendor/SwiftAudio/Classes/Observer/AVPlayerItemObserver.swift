@@ -45,21 +45,25 @@ class AVPlayerItemObserver: NSObject {
      - parameter item: The player item to observe.
      */
     func startObserving(item: AVPlayerItem) {
-        self.stopObservingCurrentItem()
-        self.isObserving = true
-        self.observingItem = item
-        item.addObserver(self, forKeyPath: AVPlayerItemKeyPath.duration, options: [.new], context: &AVPlayerItemObserver.context)
-        item.addObserver(self, forKeyPath: AVPlayerItemKeyPath.loadedTimeRanges, options: [.new], context: &AVPlayerItemObserver.context)
+        DispatchQueue.main.async {
+            self.stopObservingCurrentItem()
+            self.isObserving = true
+            self.observingItem = item
+            item.addObserver(self, forKeyPath: AVPlayerItemKeyPath.duration, options: [.new], context: &AVPlayerItemObserver.context)
+            item.addObserver(self, forKeyPath: AVPlayerItemKeyPath.loadedTimeRanges, options: [.new], context: &AVPlayerItemObserver.context)
+        }
     }
     
     func stopObservingCurrentItem() {
-        guard let observingItem = observingItem, isObserving else {
-            return
+        DispatchQueue.main.async {
+            guard let observingItem = self.observingItem, self.isObserving else {
+                return
+            }
+            observingItem.removeObserver(self, forKeyPath: AVPlayerItemKeyPath.duration, context: &AVPlayerItemObserver.context)
+            observingItem.removeObserver(self, forKeyPath: AVPlayerItemKeyPath.loadedTimeRanges, context: &AVPlayerItemObserver.context)
+            self.isObserving = false
+            self.observingItem = nil
         }
-        observingItem.removeObserver(self, forKeyPath: AVPlayerItemKeyPath.duration, context: &AVPlayerItemObserver.context)
-        observingItem.removeObserver(self, forKeyPath: AVPlayerItemKeyPath.loadedTimeRanges, context: &AVPlayerItemObserver.context)
-        self.isObserving = false
-        self.observingItem = nil
     }
     
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
