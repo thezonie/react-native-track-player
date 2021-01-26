@@ -193,7 +193,7 @@ class AVPlayerWrapper: AVPlayerWrapperProtocol {
     
     
     func load(from url: URL, playWhenReady: Bool, options: [String: Any]? = nil) {
-        reset(soft: true)
+        reset(soft: false)
         _playWhenReady = playWhenReady
 
         if currentItem?.status == .failed {
