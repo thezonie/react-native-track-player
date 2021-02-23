@@ -51,7 +51,8 @@ public class RNTrackPlayerAudioPlayer: QueuedAudioPlayer {
     
     override func AVWrapper(didChangeState state: AVPlayerWrapperState) {
         super.AVWrapper(didChangeState: state)
-		self.reactEventEmitter.sendEvent(withName: "playback-state", body: ["state": state.rawValue])
+        guard reactEventEmitter.bridge != nil else { return }
+		reactEventEmitter.sendEvent(withName: "playback-state", body: ["state": state.rawValue])
     }
     
     override func AVWrapper(failedWithError error: Error?) {
